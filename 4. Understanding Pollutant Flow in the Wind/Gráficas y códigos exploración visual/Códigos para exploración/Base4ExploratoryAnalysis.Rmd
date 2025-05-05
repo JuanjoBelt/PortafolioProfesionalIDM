@@ -1,0 +1,34 @@
+---
+title: "ExploraciónDatos"
+author: "Asgard Andres Mendoza Flores"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+Norte_2 <- read.csv("00.csv")
+Norte <- read.csv("01.csv")
+Noroeste <- read.csv("02.csv")
+Sureste <- read.csv("03.csv")
+Centro <- read.csv("04.csv")
+tables = list(Norte_2,Norte,Noroeste,Sureste,Centro)
+```
+
+```{r}
+date_formating <- function(df) 
+{
+  df[[1]] <- as.POSIXct(df[[1]], tz=Sys.timezone())
+  return(df)
+}
+tables= lapply(tables,date_formating)
+```
+
+```{r}
+```
+```{r}
+```
+

@@ -1,0 +1,5 @@
+Original data:
+https://drive.google.com/file/d/1QyEHjFVszY8sgUrNxcF1rcFQW55Not-T/view?usp=share_link
+
+We attempted uploading double compressed files and github still returned the action as unvalid as
+they were too heavy (still). Which is why we share a link instead. 

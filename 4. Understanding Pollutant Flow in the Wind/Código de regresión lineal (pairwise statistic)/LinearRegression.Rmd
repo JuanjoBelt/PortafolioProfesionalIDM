@@ -1,0 +1,348 @@
+---
+title: "PairwiseStatistics"
+author: "Asgard Andres Mendoza Flores"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+Norte_2 <- read.csv("00.csv")
+Noroeste <- read.csv("02.csv")
+Sureste <- read.csv("03.csv")
+Centro <- read.csv("04.csv")
+
+#Se hace una lista con todas las estaciones que se piensan analizar 
+#tables será usado para análisis detallados de cada estación 
+tables = list(Norte_2,Noroeste,Sureste,Centro)
+```
+
+Actualmente sólo se está trabajando con la estación "Norte_2"
+
+```{r}
+date_formating <- function(df) 
+{
+  df[[1]] <- as.POSIXct(df[[1]], tz=Sys.timezone())
+  names(df)[1] <- "date"
+  return(df)
+}
+tables= lapply(tables,date_formating)
+```
+
+```{r}
+summary(tables[[1]])
+```
+
+Se determinan los intervalos de fechas exactos para los que se realizará el PolarPlot
+
+```{r}
+library(openair)
+data=tables[[1]]
+data <- cutData(data, type = "season")
+
+print(unique(data$season))
+```
+
+```{r}
+spring_data <- subset(data, season =="spring (mam)")
+summer_data <- subset(data, season == "summer (jja)")
+autumn_data <- subset(data, season== "autumn (son)")
+winter_data <- subset(data, season == "winter (def)")
+```
+
+A esta función faltaría agregarle los datos separados por las estaciones "correctas".
+
+```{r}
+library(openair)
+polarPlot(tables[[1]], 
+          poll=c("PM2.5", "PM10"), 
+          statistic= "Pearson", 
+          col="turbo", 
+          limits=c(0,1),
+          x="WSR", wd="WDV",
+          type="season",
+          ws_spread=2.5,
+          wd_spread=10)
+```
+
+## Filtrar Datos para Regresión
+
+```{r}
+plot(winter_data[-c(1, 9)])
+```
+
+Aunque ninguna de las relaciones entre variables es evidentemente lineal, sí hay algunas que podrían tener una buena correlación.
+
+```{r}
+cor(winter_data[-c(1, 9)])
+```
+
+
+```{r}
+library(ggplot2)
+library(reshape2)
+
+ggplot(data = melt(cor(winter_data[-c(1, 9)])), aes(Var2, Var1, fill = value))+
+ geom_tile(color = "white")+
+ scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+   midpoint = 0, limit = c(-1,1), space = "Lab", 
+   name="Pearson\nCorrelation") +
+  theme_minimal()+ 
+ theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+    size = 12, hjust = 1))+
+ coord_fixed()
+```
+
+Al estudiar el coeficiente de correlación de Pearson entre las variables se puede notar que el par de variables con mayor correlación es (PM10, PM2.5), con un coeficiente de 0.6564.
+
+```{r}
+data = winter_data[c('PM10', 'PM2.5')]
+plot(data)
+```
+
+La relación lineal parece convincente para los intervalos con mayor densidad de puntos, sin embargo, mientras aumentan los valores, la relación se vuelve más difusa.
+
+## Estudio de Valores Atípicos e Influyentes
+
+```{r}
+reg = lm(winter_data$PM2.5 ~ winter_data$PM10)
+summary(reg)
+```
+
+A partir del resumen del modelo de regresión se obtiene el ajuste $r^2 = 0.4308$, un valor muy bajo, pero que posiblemente pueda mejorarse tratando datos atípicos e influyentes.
+
+### Detección de Datos Atípicos
+
+Se busca detectar datos atípicos mediante el criterio de la desviación estándar.
+
+```{r}
+reg.rstandard = rstandard(reg)
+```
+
+También se prueba a través del criterio de estandarización extrema.
+
+```{r}
+reg.rstudent = rstudent(reg)
+```
+
+### Detección de Datos Influyentes
+
+Primero, por grado de leverage.
+
+```{r}
+reg.hat = hatvalues(reg)
+```
+
+Por distancia de cook.
+
+```{r}
+reg.cooks = cooks.distance(reg)
+```
+
+### Resultados
+
+```{r}
+reg.residuals = reg$residuals
+resultados = data.frame(reg.residuals,
+                        reg.rstandard, 
+                        reg.rstudent,
+                        reg.hat, 
+                        reg.cooks)
+resultados[order(abs(resultados$reg.residuals), decreasing = TRUE), ]
+```
+
+Como puede verse, existen datos que se encuentran a una distancia de hasta 18 desviaciones estándar de la media, los cuales pueden sin duda considerarse atípicos. Vamos a filtrar y conservar únicamente aquellos que están a menos de tres desviaciones estándar de la media.
+
+La distancia de cook mide la influencia de cada observación en el modelo considerando qué tanto cambiaría este si la observación no estuviera. La matriz hat contiene en su diagonal las distancias relativas desde el centroide de los datos hasta cada uno de los puntos. Las "cotas de influencia" son...
+
+$$
+\text{Leverage: } \frac{2.5 * (p + 1)}{n} = \frac{2.5 * 3}{3597} = 0.0021
+$$
+
+$$
+\text{Distancia Cook } = 1
+$$
+
+```{r}
+new.data = cbind(winter_data[c(5, 6)], reg.rstudent, reg.hat, reg.cooks)
+# Se eliminan aquellos que están muy alejados en términos de desviaciones estándar.
+new.data = new.data[new.data$reg.rstudent <= 3, ]
+# Se eliminan aquellos que no cumplen el criterio de la distancia de Leverage
+new.data = new.data[new.data$reg.hat <= 0.0021, ]
+# Se eliminan aquellos que no cumplen el crierio de la distancia de Cook:
+new.data = new.data[new.data$reg.cooks <= 1, ]
+cat('Porcentaje de observaciones conservadas:', 100 * length(new.data$PM10) / length(winter_data$PM10), "%")
+```
+
+Una vez eliminados los datos atípicos e influyentes se reajusta el modelo lineal, esperando mejores resultados.
+
+## Nuevo Modelo Lineal
+
+```{r}
+reg = lm(new.data$PM2.5 ~ new.data$PM10)
+summary(reg)
+```
+
+El modelo tiene un ajuste $r^2 = 0.4459$, que es ligeramente superior al ajuste original con los datos atípicos e influyentes, pero sigue sin ser un ajuste aceptable apriori, pues explica muy poco sobre la relación de los datos, aunque quizá no es la mejor métrica para datos que a simple vista no son homocedásticos.
+
+```{r}
+plot(new.data[c('PM10', 'PM2.5')], main = "Relación entre Contaminantes PM10 y PM2.5")
+abline(reg, col="red")
+```
+
+## Validación del Modelo
+
+### Media Cero en los Residuos
+
+Se realiza una prueba de hipótesis para media.
+
+$$
+H_0: \mu_R = 0
+$$
+
+$$
+H_1:\mu_R\neq 0
+$$
+
+```{r}
+t.test(reg$residuals)
+```
+
+Ya que el valor-p es mayor que el nivel de significancia, se conserva la hipótesis nula y se concluye que no hay suficiente evidencia estadística para descartar que la media de los residuos es cero. Se cumple el supuesto.
+
+### Normalidad de los Residuos
+
+```{r}
+qqnorm(reg$residuals)
+qqline(reg$residuals)
+```
+
+El el Q-Q Plot puede observarse que la distribución de los datos tiene colas cortas, pues los datos se concentran cerca de la media, generando una curtosis superior a la esperada en una distribución normal. Para respaldar estadísticamente la normalidad, se lleva a cabo una prueba.
+
+La prueba de normalidad de Shapiro-Wilk se basa en las siguientes hipótesis:
+
+-   $H_0:$ La distribución es normal.
+
+-   $H_1:$ La distribución NO es normal.
+
+```{r}
+shapiro.test(reg$residuals)
+```
+
+Siendo el valor-p notablemente menor que el nivel de significancia $\alpha = 0.05$, se rechaza la hipótesis nula y se concluye que existe evidencia estadística para negar que los residuos se distribuyen normalmente. No pasó la prueba.
+
+### Homocedasticidad
+
+Se implementan la prueba de Breusch-Pagan, además del test de White, la cual es una prueba más robusta que detecta formas no lineales de la heterocedasticidad.
+
+Estos test busca determinar la homocedasticidad, es decir, si la varianza de los residuos depende o no de los valores de las variables predictoras (o la variable predictora, como en este caso). Para ello, se establecen las siguientes hipótesis:
+
+-   $H_0: \text{Se cumple homocedasticidad.}$
+
+-   $H_1: \text{No se cumple la homocedasticidad.}$
+
+```{r}
+library(lmtest)
+#Prueba Breusch-Pagan:
+bptest(reg)
+
+#Prueba de White:
+bptest(reg, varformula = ~ new.data$PM10 * new.data$PM2.5 + I(new.data$PM10^2) + I(new.data$PM2.5^2))
+```
+
+Ya que el valor-p en ambos test es notablemente menor que el nivel de significancia, se rechaza la hipótesis nula, y se concluye que existe evidencia estadística para descartar que los residuos sean homocedásticos. No se cumple el supuesto.
+
+## Conclusión Apriori
+
+Ya que dos de los supuestos mas importantes de la regresión lineal (normalidad y homocedasticidad de los residuos) no se cumplen, se determina que la regresión lineal no es un buen modelo para entender la relación entre las partículas PM10 y PM2.5
+
+## Estandarización de Datos
+
+```{r}
+new.data$PM10 = scale(new.data$PM10)
+new.data$PM2.5 = scale(new.data$PM2.5)
+new.data
+```
+
+## Último Modelo Lineal Estandarizado
+
+```{r}
+reg = lm(new.data$PM2.5 ~ new.data$PM10)
+summary(reg)
+```
+
+El modelo tiene un ajuste $r^2 = 0.4459$, que es ligeramente superior al ajuste original con los datos atípicos e influyentes, pero sigue sin ser un ajuste aceptable apriori, pues explica muy poco sobre la relación de los datos, aunque quizá no es la mejor métrica para datos que a simple vista no son homocedásticos.
+
+```{r}
+plot(new.data[c('PM10', 'PM2.5')], main = "Relación entre Contaminantes PM10 y PM2.5")
+abline(reg, col="red")
+```
+
+## Validación del Modelo
+
+### Media Cero en los Residuos
+
+Se realiza una prueba de hipótesis para media.
+
+$$
+H_0: \mu_R = 0
+$$
+
+$$
+H_1:\mu_R\neq 0
+$$
+
+```{r}
+t.test(reg$residuals)
+```
+
+Ya que el valor-p es mayor que el nivel de significancia, se conserva la hipótesis nula y se concluye que no hay suficiente evidencia estadística para descartar que la media de los residuos es cero. Se cumple el supuesto.
+
+### Normalidad de los Residuos
+
+```{r}
+qqnorm(reg$residuals)
+qqline(reg$residuals)
+```
+
+El el Q-Q Plot puede observarse que la distribución de los datos tiene colas cortas, pues los datos se concentran cerca de la media, generando una curtosis superior a la esperada en una distribución normal. Para respaldar estadísticamente la normalidad, se lleva a cabo una prueba.
+
+La prueba de normalidad de Shapiro-Wilk se basa en las siguientes hipótesis:
+
+-   $H_0:$ La distribución es normal.
+
+-   $H_1:$ La distribución NO es normal.
+
+```{r}
+shapiro.test(reg$residuals)
+```
+
+Siendo el valor-p notablemente menor que el nivel de significancia $\alpha = 0.05$, se rechaza la hipótesis nula y se concluye que existe evidencia estadística para negar que los residuos se distribuyen normalmente. No pasó la prueba.
+
+### Homocedasticidad
+
+Se implementan la prueba de Breusch-Pagan, además del test de White, la cual es una prueba más robusta que detecta formas no lineales de la heterocedasticidad.
+
+Estos test busca determinar la homocedasticidad, es decir, si la varianza de los residuos depende o no de los valores de las variables predictoras (o la variable predictora, como en este caso). Para ello, se establecen las siguientes hipótesis:
+
+-   $H_0: \text{Se cumple homocedasticidad.}$
+
+-   $H_1: \text{No se cumple la homocedasticidad.}$
+
+```{r}
+library(lmtest)
+#Prueba Breusch-Pagan:
+bptest(reg)
+
+#Prueba de White:
+bptest(reg, varformula = ~ new.data$PM10 * new.data$PM2.5 + I(new.data$PM10^2) + I(new.data$PM2.5^2))
+```
+
+Ya que el valor-p en ambos test es notablemente menor que el nivel de significancia, se rechaza la hipótesis nula, y se concluye que existe evidencia estadística para descartar que los residuos sean homocedásticos. No se cumple el supuesto.
+
+## Conclusión
+
+Puesto que la estandarización no funcionó tampoco, se concluye que la relación entre estas variables no puede ser explicada simplemente mediante regresión lineal.

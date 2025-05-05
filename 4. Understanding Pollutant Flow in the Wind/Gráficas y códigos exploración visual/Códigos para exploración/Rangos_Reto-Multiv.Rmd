@@ -1,0 +1,53 @@
+---
+title: "Rangos_Reto-Multiv"
+author: "Diego Armando Mijares A01722421"
+date: "2024-11-14"
+output: html_document
+---
+
+```{r}
+# Librerías necesarias
+library(dplyr)
+
+# Función para obtener rangos de valores de cada columna
+obtener_rangos <- function(data) {
+  rangos <- data %>%
+    summarise(across(everything(), 
+                     list(min = ~ min(., na.rm = TRUE), 
+                          max = ~ max(., na.rm = TRUE))))
+  return(rangos)
+}
+
+# Lista de nombres de archivos
+archivos <- c("00.csv", "01.csv", "02.csv", "03.csv", "04.csv")
+
+# Lectura de archivos y obtención de rangos
+resultados <- lapply(archivos, function(archivo) {
+  datos <- read.csv(archivo)
+  rangos <- obtener_rangos(datos)
+  return(rangos)
+})
+```
+
+```{r}
+# Mostrar resultados
+for (i in seq_along(archivos)) {
+  cat("**Rangos de valores para archivo**:", archivos[i], "\n")
+  print(resultados[[i]])
+  cat("\n\n")
+}
+```
+
+```{r}
+# Unir las 5 bases de datos en una sola
+datos_combinados <- do.call(rbind, lapply(archivos, read.csv))
+
+# Obtener rangos considerando todas las bases de datos juntas
+rangos_globales <- obtener_rangos(datos_combinados)
+
+# Mostrar rangos globales
+cat("**Rangos de valores considerando todas las bases de datos**\n")
+print(rangos_globales)
+```
+
+

@@ -1,0 +1,134 @@
+---
+title: "Medidas Cuantitativas"
+author: "Diego Gutierrez Vargas"
+date: "2024-11-8"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+#1. Cargar Dataset
+Diccionario de Dataset usado (0X.csv):
+0: "NORTE 2"
+1: "NORTE"
+2: "NORESTE"
+3: "SURESTE"
+4: "CENTRO"
+
+```{r}
+#Cargar dataset
+dataset = read.csv("00.csv")
+head(dataset)
+```
+Se enceuntra que hay 7 columnas en el dataset. Para hacer un análisis cuantitativo de las variables númericas no categóricas se excluye el tiempo como variable de análisis.
+#2.Extraer medidas cuantitativas
+
+
+##Medidas de tendencia central
+```{r}
+medidas_tendencia_central<-function(column_dataset){
+  media = mean(column_dataset)
+  mediana = median(column_dataset)
+
+  #Función de moda
+  mode <- function(v) {
+    uniqv <- unique(v)
+    uniqv[which.max(tabulate(match(v, uniqv)))]
+  }
+  moda = mode(column_dataset)
+
+  return(c(media, mediana, moda))
+}
+
+resultados_tendencia_central <- matrix(nrow = 6, ncol = 3)
+for(i in 1:6){
+  resultados_tendencia_central[i,]<-medidas_tendencia_central(dataset[,i+1])
+}
+#Definir nombres de filas y columnas
+rownames(resultados_tendencia_central) <- c("NO2", "O3", "PM10", "SO2", "Velocidad Aire", "Dirección Aire")
+colnames(resultados_tendencia_central) <- c("Media", "Mediana", "Moda")
+
+resultados_tendencia_central
+```
+Se puede ver que hay cierta concordancia de media y mediana en los contaminantes NO2,O3,SO2 y en la velocidad del aire.
+## Medidas de dispersión
+```{r}
+medidas_dispersion<-function(column_dataset){
+  min = min(column_dataset)
+  max = max(column_dataset)
+  var = var(column_dataset)
+  desvest = sqrt(var)
+  return(c(min, max, desvest, var))
+}
+resultados_medidas_dispersion <- matrix(nrow = 6, ncol = 4)
+
+for(i in 1:6){
+  resultados_medidas_dispersion[i, ] <- medidas_dispersion(dataset[, i+1])
+}
+
+#Definir nombres de filas y columnas
+rownames(resultados_medidas_dispersion) <- c("NO2", "O3", "PM10", "SO2", "Velocidad Aire", "Dirección Aire")
+colnames(resultados_medidas_dispersion) <- c("Min", "Max", "Desviación Est.","Varianza")
+
+resultados_medidas_dispersion
+
+```
+##Resultados de tendencia central y medidas de dispersión
+```{r}
+print(cbind(resultados_tendencia_central,resultados_medidas_dispersion))
+```
+
+##Tabla de distribución frecuencia
+```{r}
+titulos <-c("NO2", "O3", "PM10", "SO2", "Velocidad Aire", "Dirección Aire")
+for (i in 2:7){
+  hist(dataset[,i],breaks = 35, main = titulos[i-1], xlab = titulos[i-1],ylab = "Frecuencia")
+}
+```
+NO2: Asimétrica sesgada a la derecha
+O3: Asimétrica sesgada a la derecha
+PM10: Asimétrica sesgada a la derecha
+SO2:Asimétrica sesgada a la derecha (Una gran concentración de datos en los rangos 0.2 y 0.4)
+Velocidad aire: Asimétrica sesgada a la derecha(Hay vientos mayormente entre 4 y 11 kilométros por hora)
+Dirección aire: sesgada a la derecha (Se concentra las direcciones entre norte y el este)
+#3.Exploración a través de gráficas
+
+```{r}
+titulos <- c("NO2", "O3", "PM10", "SO2", "Velocidad Aire", "Dirección Aire")
+for (i in 2:7){
+  boxplot(dataset[,i], main = titulos[i-1])
+}
+
+```
+Muchos valores atípicos observados a través de los boxplots, especialmente en la dirección del aire.
+##Correlación
+```{r}
+cor_matrix<-cor(data.frame(dataset[,-1]))
+cor_matrix
+#checar corr.test() con librería psych para ver sus p valores.
+#new=corr.test(dataset[,-1])
+#new$ci
+```
+## Mapa de Calor de Correlación
+```{r}
+#install.packages("corrplot")
+library(reshape2)
+library(ggplot2)
+
+heatmap(cor_matrix)
+titulos <-c("NO2", "O3", "PM10", "SO2", "Velocidad Aire", "Dirección Aire")
+data_melt<-melt(round(cor_matrix,3))
+
+ggp <- ggplot(data_melt, aes(Var1,Var2, fill=value)) +geom_tile()+geom_text(aes(Var2,Var1,label = value),color = 'white',size = 4)
+ggp                                                               # Print heatmap
+```
+#Ejemplo comprobar si hay correlación significativa entre variables
+
+```{r}
+alpha = 0.01
+correlation<-cor.test(corr_dataframe[,1], corr_dataframe[,2], method = "pearson", alternative = "two.sided", conf.level = 1-alpha)
+cat("Para las variables",colnames(corr_dataframe)[1:2],"\n")
+cat("Valor p:", correlation$p.value, "\n")
+cat("Conclusión:", ifelse(correlation$p.value < alpha, "Existe una correlación significativa", "No existe una correlación significativa"))
+```
+

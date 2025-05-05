@@ -1,0 +1,247 @@
+---
+title: "ExploraciónDatos"
+author: "Asgard Andres Mendoza Flores"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Primero se necesitan cargar todas las bases de datos y agregar manualmente las coordenadas de latitud y longitud de cada base. 
+Es muy importante que revisen qué sensores arrojan datos de velocidad y dirección del viento *FUNCINOALES* pues si esto no se cumple no podemos utilizar este sensor para un análisis direccional completo. Otro factor importante es asegurarnos que el sensor tenga datos suficientes para hacer el análisis de contaminantes 
+```{r}
+Norte_2 <- read.csv("00.csv")
+Noreste <- read.csv("01.csv")
+Sureste <- read.csv("02.csv")
+Centro <- read.csv("03.csv")
+Suroeste <- read.csv("04.csv")
+Noroeste_2 <- read.csv("05.csv")
+Noreste_2 <- read.csv("06.csv")
+Sureste_2 <- read.csv("07.csv")
+Suroeste_2 <- read.csv("08.csv")
+Sureste_3 <- read.csv("09.csv")
+Sur <- read.csv("10.csv")
+Noreste_3 <- read.csv("11.csv")
+Noroeste_3 <- read.csv("12.csv")
+
+# Assigning latitude and longitude
+Norte_2$lat <- 25.729665
+Noreste$lat <- 25.744919
+Sureste$lat <- 25.665187
+Centro$lat <- 25.675933
+Suroeste$lat <- 25.679142
+Noroeste_2$lat <- 25.800344
+Noreste_2$lat <- 25.777419
+Sureste_2$lat <- 25.645959
+Suroeste_2$lat <- 25.664785
+Sureste_3$lat <- 25.600721
+Sur$lat <- 25.616250
+Noreste_3$lat <- 25.789778
+Noroeste_3$lat <- 25.784578
+
+Norte_2$lon <- -100.310114
+Noreste$lon <- -100.253210
+Sureste$lon <- -100.243884
+Centro$lon <- -100.338611
+Suroeste$lon <- -100.467620
+Noroeste_2$lon <- -100.585090
+Noreste_2$lon <- -100.188139
+Sureste_2$lon <- -100.095418
+Suroeste_2$lon <- -100.412704
+Sureste_3$lon <- -99.995270
+Sur$lon <- -100.273190
+Noreste_3$lon <- -100.077064
+Noroeste_3$lon <- -100.463273
+
+# List of tables
+tables <- list(
+  Norte_2,
+  Noreste,
+  Sureste,
+  Centro,
+  Suroeste,
+  Noroeste_2,
+  Noreste_2,
+  Sureste_2,
+  Suroeste_2,
+  Sureste_3,
+  Sur,
+  Noreste_3,
+  Noroeste_3
+)
+
+# Define the expected column names
+expected_names <- c("date", "NO2", "O3", "PM10", "SO2", "WSR", "WDV")
+
+# Standardize column names for all tables
+tables <- lapply(tables, function(df) {
+  colnames(df)[1:7] <- expected_names
+  df
+})
+
+# Combine all dataframes into one
+combined_df <- do.call(rbind, tables)
+
+# Print the combined dataframe to verify
+head(combined_df)
+combined_df
+```
+```{r}
+#Quitar antes del 1 de marzo de 2023 y posteriores al 29 de febrero de 2024 a medianoche
+start_date <- as.POSIXct("2023-03-01 00:00:00")
+end_date <- as.POSIXct("2024-02-29 23:59:59")
+
+combined_df = combined_df[combined_df$date >= start_date & combined_df$date <= end_date, ]
+combined_df
+```
+
+
+Para este tipo de anáisis es importante tener un formato de fecha válida, este chunk no ocupa modificación y su función es asegurarse que tanto la tabla como el df tengan el formato de fecha adecuado para el análisis
+```{r}
+date_formating <- function(df) 
+{
+  df[[1]] <- as.POSIXct(df[[1]], tz=Sys.timezone())
+  names(df)[1] <- "date"
+  return(df)
+}
+tables= lapply(tables,date_formating)
+combined_df = date_formating(combined_df)
+combined_df
+```
+
+```{r}
+tables[[1]]
+```
+#Gráficos polares
+El gráfico polar por si mismo no respresenta un análisis direccional, pero es una gran herramienta que permite estudiar las relaciones entre los contaminantes y el viento un un solo lugar. Si necesitan más información usen la siguiente documentación: https://bookdown.org/david_carslaw/openair/sections/directional-analysis/polar-plots.html   
+Ejemplo de cómo hacer un gráfico polar de una única estación y un único tipo de contaminante, en este caso se hizo un gráfico del contaminante NO2 en la estación Norte 2
+```{r}
+#install.packages("openair")
+library(openair)
+polarPlot(tables[[1]], pollutant = "NO2",
+          x= "WSR", wd= "WDV")
+```
+Esta función ha hecho gráficos por estación para los contaminantes NO2 y 03 en el sensor Norte 2 
+
+```{r}
+tables[[2]]
+```
+
+```{r}
+library(openair)
+polarPlot(tables[[1]], pollutant = c("NO2", "O3"),
+          x= "WSR", wd= "WDV",
+          date = "X", type = "season",
+          angle.scale = 0)
+```
+Este es un ejemplo de análisis detallado por cada estación. El resultado son gráficos del contaminante NO2 divididos por estación para cada uno de los sensores. Nótese que es importante generar una función que grafique y después se usa la función "lapply" para ejecutar esa función en cada tabla de nuestra lista de tablas. 
+```{r}
+p = "NO2"
+i = "season"
+PolarPlot <- function(df, pollu, interval) 
+{
+  polarPlot(df, pollutant = pollu,
+            x= "WSR", wd= "WDV",
+            type =interval , angle.scale = 0)
+  return(df)
+}
+lapply(tables,PolarPlot, p,i)
+```
+Esta librería es crucial para pasar a hacer análisis direccionales, la base de datos "polar_data" me ha sido útil como referencia "ideal" de cómo deberían de estar los datos. Si intentan implementar una función y no les sale denle un intento a esa misma función con esta base de datos y vean en qué difieren para poder avanzar. Algo importante es que hasta este momento habíamos usado la lista de tablas y la función lapply para acceder a cada estación. Pero si se trabaja con la librería de "openairmaps" deberán de tener un solo dataframe que contenga la información de todas las estaciones, la librería sabe asignar cada observación a la estación respectiva con base en la latitud y la longitud observada en la estación. 
+```{r}
+#install.packages("openairmaps")
+library(openairmaps)
+
+polar_data
+```
+Openairmaps sí es usado para hacer análisis dirreccionales, utilizen la siguiente documentación como apoyo para guiar su exploración: https://bookdown.org/david_carslaw/openair/sections/maps/maps-polar.html
+
+```{r}
+colnames(combined_df)[colnames(combined_df) == "WDV"] <- "wd"
+combined_df
+```
+Esta es la base para generar mapas con los gráficos polares. Es importante generar un gráfico con todas las estaciones y explorar la positibilidad de empalmar en un mismo "leaflet" los gráficos con un filtro para contaminante, otro filtro para estación del año y algún otro filtro si lo consideran pertinente. 
+
+
+Polar plot por contaminante en las 13 estaciones con todos los datos.
+```{r}
+#install.packages("leaflet.providers")
+library(leaflet.providers)
+polarMap(
+  combined_df,
+  latitude = "lat",
+  longitude = "lon",
+  pollutant = c("NO2","PM10","O3","SO2"),
+  type = "season",
+  x= "WSR"
+)
+```
+```{r}
+library(dplyr)
+
+# Convert the `date` column to a Date-Time object
+combined_df$date <- as.POSIXct(combined_df$date, format = "%Y-%m-%d %H:%M:%S")
+
+# Adding seasonal information
+combined_df <- combined_df %>%
+  mutate(
+    month = as.numeric(format(date, "%m")),
+    season = case_when(
+      month %in% c(12, 1, 2) ~ "Winter",
+      month %in% c(3, 4, 5) ~ "Spring",
+      month %in% c(6, 7, 8) ~ "Summer",
+      month %in% c(9, 10, 11) ~ "Autumn"
+    )
+  )
+combined_df
+```
+
+```{r}
+#install.packages("leaflet.providers")
+polarMap(
+  filter(combined_df,season == "Winter"),
+  latitude = "lat",
+  longitude = "lon",
+  pollutant = c("NO2","PM10","O3","SO2"),
+  type = "season",
+  x= "WSR"
+)
+
+```
+
+```{r}
+polarMap(
+  filter(combined_df,season == "Spring"),
+  latitude = "lat",
+  longitude = "lon",
+  pollutant = c("NO2","PM10","O3","SO2"),
+  type = "season",
+  x= "WSR"
+)
+```
+
+```{r}
+polarMap(
+  filter(combined_df,season == "Summer"),
+  latitude = "lat",
+  longitude = "lon",
+  pollutant = c("NO2","PM10","O3","SO2"),
+  type = "season",
+  x= "WSR"
+)
+```
+
+
+```{r}
+polarMap(
+  filter(combined_df,season == "Autumn"),
+  latitude = "lat",
+  longitude = "lon",
+  pollutant = c("NO2","PM10","O3","SO2"),
+  type = "season",
+  x= "WSR"
+)
+```

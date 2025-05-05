@@ -1,0 +1,25 @@
+	•	00.csv: NORTE 2 
+	•	
+	•	01.csv: NORESTE 
+	•	
+	•	02.csv: SURESTE 
+	•	
+	•	03.csv: CENTRO 
+	•	
+	•	04.csv: SUROESTE 
+	•	
+	•	05.csv: NOROESTE 2 
+	•	
+	•	06.csv: NORESTE2 
+	•	
+	•	07.csv: SURESTE2 
+	•	
+	•	08.csv: SUROESTE2 
+	•	
+	•	09.csv: SURESTE 3 
+	•	
+	•	10.csv: SUR 
+	•	
+	•	11.csv: NORESTE 3 
+	•	
+	•	12.csv: NOROESTE 3
