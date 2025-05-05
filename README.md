@@ -1,6 +1,6 @@
 # Portafolio Profesional
 
-Soy **Juan José H. Beltrán**, estudiante de Ingeniería en Ciencia de Datos y Matemáticas. El presente repositorio tiene como objetivo servir como mi portafolio profesional; una compilación de mis proyectos más relevantes.
+Mi nombre es **Juan José H. Beltrán**, estudiante de Ingeniería en Ciencia de Datos y Matemáticas. El presente repositorio tiene como objetivo servir como mi portafolio profesional; una compilación de mis proyectos más relevantes.
 
 ## Estructura
 
@@ -23,4 +23,8 @@ Modelo matemático para representar la competencia entre distintas especies de p
 
 ### 4. Understanding Polutant Flow in the Wind
 
-Se utilizaron métodos estadísticos y de regresión para analizar la influencia de los movimientos del viento en la dispersión de los contaminantes en el aire del Área Metropolitana de Monterrey. A través de las herramientas visuales que se propusieron se pudieron identificar algunos corredores a través de los cuales el flujo de aire dispersa contaminantes.+
+Se utilizaron métodos estadísticos y de regresión para analizar la influencia de los movimientos del viento en la dispersión de los contaminantes en el aire del Área Metropolitana de Monterrey. A través de las herramientas visuales que se propusieron se pudieron identificar algunos corredores a través de los cuales el flujo de aire dispersa contaminantes.
+
+### 5. Traveler Salesman Problem with Bioinspired Algorithms
+
+Se resolvió un problema del agente viajero utilizando diferentes algoritmos bioinspirados como genetic algorithm, ant colony optimization y bee algorithm.
