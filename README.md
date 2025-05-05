@@ -11,4 +11,8 @@ En cada una de las carpetas que se desprenden de la raíz del repositorio se enc
 
 ### 1. Vehicle Routing Problem for Reforestation
 
-Se utilizó un modelo matemático basado en un problema de ruteo de vehículos capacitado para optimizar las rutas de trasporte de plantas para un programa de reforestación. Se aplicó programación lineal y métodos heurísticos.
+Se utilizó un modelo matemático basado en un problema de ruteo de vehículos capacitado para optimizar las rutas de trasporte de plantas para un programa de reforestación de la CONAFOR. Se aplicó programación lineal y métodos heurísticos propios.
+
+### 2. Optimal Location of Charging Stations
+
+Se utilizó un modelo matemático basado en un optimal facility location problem para optimizar la locación de estaciones de carga de vechículos eléctricos para Iberdrola México considerando el flujo vehícular urbano y las capacidades de la red eléctrica. Se aplicó programación lineal para resolver a optimalidad.
