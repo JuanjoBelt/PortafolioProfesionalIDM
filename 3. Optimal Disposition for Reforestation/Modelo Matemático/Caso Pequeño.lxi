@@ -1,0 +1,24 @@
+B 3 C o m p i l a t i o n
+B 59 Equation Listing    SOLVE estocastico Using MIP From line 48
+D 62 obj
+D 67 r1
+D 78 r2
+D 89 r3
+D 100 r4
+D 111 r5
+B 123 Column Listing      SOLVE estocastico Using MIP From line 48
+E 126 x
+E 133 z
+E 155 p
+B 604 Range Statistics    SOLVE estocastico Using MIP From line 48
+B 615 Model Statistics    SOLVE estocastico Using MIP From line 48
+B 628 Solution Report     SOLVE estocastico Using MIP From line 48
+F 675 obj
+F 677 r1
+F 691 r2
+F 700 r3
+F 2001 r4
+F 3302 r5
+G 4605 x
+G 4607 z
+G 5908 p

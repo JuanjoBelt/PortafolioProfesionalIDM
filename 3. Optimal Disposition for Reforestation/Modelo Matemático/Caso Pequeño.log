@@ -1,0 +1,219 @@
+--- Job Caso Peque�o.gms Start 09/07/24 23:19:29 46.5.0 a671108d WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\GAMS\46\gmsprmNT.txt
+--- GAMS Parameters defined
+    Input "C:\Users\juanj\Documents\GitHub\OptimizacionEstocastica\Modelo Matem�tico\Caso Peque�o.gms"
+    PageSize 0
+    ScrDir "C:\Users\juanj\Documents\GitHub\OptimizacionEstocastica\Modelo Matem�tico\225a\"
+    SysDir C:\GAMS\46\
+    LogOption 3
+    ErrMsg 1
+    ErrorLog 99
+    IDE 1
+    LstTitleLeftAligned 1
+Licensee: GAMS Community License for Juan Jose Hernandez G240527|0002AO-GEN
+          INSTITUTO TECNOLOGICO Y DE EST. SUP. DE MONTERREY, IndustrCL15735
+          C:\Users\juanj\Documents\GAMS\gamslice.txt
+          Juan Jose Hernandez Beltran, a00836747@tec.mx                    
+          Community license for demonstration and instructional purposes only
+Processor information: 1 socket(s), 8 core(s), and 16 thread(s) available
+GAMS 46.5.0   Copyright (C) 1987-2024 GAMS Development. All rights reserved
+--- Starting compilation
+--- Caso Peque�o.gms(48) 3 Mb
+--- Starting execution: elapsed 0:00:00.010
+--- Generating MIP model estocastico
+--- Caso Peque�o.gms(48) 5 Mb
+---   3,902 rows  1,333 columns  9,493 non-zeroes
+---   1,332 discrete-columns
+--- Range statistics (absolute non-zero finite values)
+--- RHS       [min, max] : [ 1.000E+00, 3.000E+00] - Zero values observed as well
+--- Bound     [min, max] : [ 1.000E+00, 1.000E+00] - Zero values observed as well
+--- Matrix    [min, max] : [ 1.000E+00, 5.000E+00]
+--- Executing CPLEX (Solvelink=2): elapsed 0:00:00.023
+
+IBM ILOG CPLEX   46.5.0 a671108d May 8, 2024           WEI x86 64bit/MS Window
+
+*** This solver runs with a community license. No commercial use.
+--- GMO setup time: 0.00s
+--- Space for names approximately 0.10 Mb
+--- Use option 'names no' to turn use of names off
+--- GMO memory 1.09 Mb (peak 1.10 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.1.0 link memory 0.07 Mb (peak 0.30 Mb)
+--- Starting Cplex
+
+Version identifier: 22.1.1.0 | 2022-11-27 | 9160aff4d
+CPXPARAM_Advance                                 0
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Pool_Capacity                       0
+CPXPARAM_MIP_Tolerances_AbsMIPGap                0
+Generic callback                                 0x50
+Tried aggregator 2 times.
+MIP Presolve eliminated 450 rows and 127 columns.
+MIP Presolve modified 324 coefficients.
+Aggregator did 36 substitutions.
+Reduced MIP has 3415 rows, 1170 columns, and 8010 nonzeros.
+Reduced MIP has 1170 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.02 sec. (16.87 ticks)
+Found incumbent of value 88.000000 after 0.03 sec. (30.38 ticks)
+Probing fixed 54 vars, tightened 0 bounds.
+Probing time = 0.05 sec. (87.06 ticks)
+Tried aggregator 1 time.
+Detecting symmetries...
+MIP Presolve eliminated 162 rows and 54 columns.
+Reduced MIP has 3253 rows, 1116 columns, and 7632 nonzeros.
+Reduced MIP has 1116 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.02 sec. (18.70 ticks)
+Probing time = 0.00 sec. (4.27 ticks)
+Clique table members: 5338.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 16 threads.
+Parallel mode: deterministic, using up to 3 threads for parallel tasks at root LP.
+Parallel mode: deterministic, using up to 13 threads for concurrent optimization:
+ * Starting dual Simplex on 1 thread...
+ * Starting Barrier on 11 threads...
+ * Starting primal Simplex on 1 thread...
+Tried aggregator 1 time.
+No LP presolve or aggregator reductions.
+Presolve time = 0.00 sec. (1.02 ticks)
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Perturbation started.
+Iteration:   101   Dual objective     =             0.000000
+Removing perturbation.
+
+Dual simplex solved model.
+
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Root relaxation solution time = 0.03 sec. (12.98 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                           88.0000        0.0000           100.00%
+Found incumbent of value 88.000000 after 0.12 sec. (158.29 ticks)
+*     0+    0                           82.0000        0.0000           100.00%
+Found incumbent of value 82.000000 after 0.12 sec. (158.30 ticks)
+      0     0        0.0000    18       82.0000        0.0000      143  100.00%
+*     0+    0                           70.0000        0.0000           100.00%
+Found incumbent of value 70.000000 after 0.12 sec. (162.72 ticks)
+      0     0        0.0000    19       70.0000     Cuts: 174      171  100.00%
+*     0+    0                           67.0000        0.0000           100.00%
+Found incumbent of value 67.000000 after 0.20 sec. (207.27 ticks)
+      0     0        0.0000    21       67.0000       Cuts: 6      229  100.00%
+*     0+    0                           64.0000        0.0000           100.00%
+Found incumbent of value 64.000000 after 0.38 sec. (342.88 ticks)
+*     0+    0                           63.0000        0.0000           100.00%
+Found incumbent of value 63.000000 after 0.42 sec. (381.24 ticks)
+*     0+    0                           58.0000        0.0000           100.00%
+Found incumbent of value 58.000000 after 0.61 sec. (424.83 ticks)
+
+Repeating presolve.
+Tried aggregator 1 time.
+MIP Presolve eliminated 1620 rows and 540 columns.
+Reduced MIP has 1633 rows, 576 columns, and 3852 nonzeros.
+Reduced MIP has 576 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.02 sec. (18.14 ticks)
+Probing time = 0.00 sec. (3.43 ticks)
+Tried aggregator 1 time.
+Detecting symmetries...
+Reduced MIP has 1633 rows, 576 columns, and 3852 nonzeros.
+Reduced MIP has 576 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.02 sec. (5.36 ticks)
+Represolve time = 0.03 sec. (29.56 ticks)
+Probing time = 0.00 sec. (3.43 ticks)
+Clique table members: 2674.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 16 threads.
+Parallel mode: deterministic, using up to 16 threads for concurrent optimization:
+ * Starting dual Simplex on 1 thread...
+ * Starting Barrier on 14 threads...
+ * Starting primal Simplex on 1 thread...
+Tried aggregator 1 time.
+No LP presolve or aggregator reductions.
+Presolve time = 0.00 sec. (0.52 ticks)
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Perturbation started.
+Iteration:    51   Dual objective     =             0.000000
+Removing perturbation.
+
+Dual simplex solved model.
+
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Root relaxation solution time = 0.01 sec. (5.62 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                           58.0000       33.5000            42.24%
+Found incumbent of value 58.000000 after 0.78 sec. (517.18 ticks)
+      0     0        0.0000    22       58.0000       33.5000      316   42.24%
+      0     0        0.0000    31       58.0000      Cuts: 30      371   42.24%
+      0     0        0.0000    28       58.0000      Cuts: 35      442   42.24%
+      0     0        0.0000    44       58.0000     Cuts: 218      525   42.24%
+      0     0        cutoff             58.0000       58.0000      525    0.00%
+Elapsed time = 1.02 sec. (655.95 ticks, tree = 0.01 MB)
+
+Implied bound cuts applied:  14
+Zero-half cuts applied:  8
+
+Root node processing (before b&c):
+  Real time             =    1.02 sec. (655.96 ticks)
+Parallel b&c, 16 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) =    1.02 sec. (655.96 ticks)
+
+--- MIP status (101): integer optimal solution.
+--- Cplex Time: 1.02sec (det. 655.97 ticks)
+
+--- Returning a primal only solution to GAMS (marginals all set to NA).
+--- Fixing integer variables and solving final LP...
+
+Version identifier: 22.1.1.0 | 2022-11-27 | 9160aff4d
+CPXPARAM_Advance                                 2
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Pool_Capacity                       0
+CPXPARAM_MIP_Tolerances_AbsMIPGap                0
+Parallel mode: deterministic, using up to 16 threads for concurrent optimization:
+ * Starting dual Simplex on 1 thread...
+ * Starting Barrier on 14 threads...
+ * Starting primal Simplex on 1 thread...
+Tried aggregator 1 time.
+LP Presolve eliminated 3901 rows and 1333 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (1.18 ticks)
+
+Dual simplex solved model.
+
+
+--- Fixed MIP status (1): optimal.
+--- Cplex Time: 0.01sec (det. 2.37 ticks)
+
+
+Proven optimal solution
+MIP Solution:           58.000000    (525 iterations, 0 nodes)
+Final Solve:            58.000000    (0 iterations)
+
+Best possible:          58.000000
+Absolute gap:            0.000000
+Relative gap:            0.000000
+
+--- Reading solution for model estocastico
+*** Status: Normal completion
+--- Job Caso Peque�o.gms Stop 09/07/24 23:19:30 elapsed 0:00:01.095
