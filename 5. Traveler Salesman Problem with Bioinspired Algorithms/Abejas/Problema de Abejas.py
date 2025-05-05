@@ -1,0 +1,1 @@
+f1 = lambda a : a + 10
