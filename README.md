@@ -22,6 +22,10 @@ Modelo matemático basado en un problema de ruteo de vehículos capacitado para 
 - Heurísticas.
 - Escritura científica.
 
+<p align = "center">
+    <img src="./1. Vehicle Routing Problem for Reforestation/Article/Sources/Route03.png">
+<p>
+
 ### 2. Optimal Location of Charging Stations
 
 Se utilizó un modelo matemático basado en un optimal facility location problem para optimizar la locación de estaciones de carga de vechículos eléctricos para Iberdrola México considerando el flujo vehícular urbano y las capacidades de la red eléctrica. Se aplicó programación lineal para resolver a optimalidad.
@@ -33,6 +37,10 @@ Se utilizó un modelo matemático basado en un optimal facility location problem
     - Geopandas para trabajar con datos geográficos reales y mapas interactivos.
 - Programación lineal.
 - Optimal facility location problem.
+
+<p align = "center">
+    <img src="./1. Vehicle Routing Problem for Reforestation/Article/Sources/Route03.png">
+<p>
 
 ### 3. Optimal Plant Disposition for Reforestation
 
