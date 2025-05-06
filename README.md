@@ -23,7 +23,7 @@ Modelo matemático basado en un problema de ruteo de vehículos capacitado para 
 - Escritura científica.
 
 <p align = "center">
-    <img src="./1. Vehicle Routing Problem for Reforestation/Article/Sources/Route03.png">
+    <img src="./1. Vehicle Routing Problem for Reforestation/Article/Sources/Route03-A.png">
 <p>
 
 ### 2. Optimal Location of Charging Stations
